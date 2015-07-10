@@ -1,9 +1,6 @@
 #Fillari.info
 
-#### Fronted for http://fillari.info
-You can find backend application [here](https://github.com/Coolnesss/Coordinates/)
-
-Mobile site /mobile
+#### Desktop site for http://fillari.info
 
 * Written in HTML, CSS3, Javascript, jQuery 
 * Openlayers 3 for the maps
