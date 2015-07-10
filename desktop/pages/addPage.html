@@ -1,0 +1,302 @@
+<div id="closed">
+
+    <button class="btn btn-info" style="margin-top: -8px;" id="add">Lisää kohde</button>
+
+</div>
+<div id="open" style="display:none;opacity:0;">
+    <div id="login" class="login" style="display:none;">
+        <a href="#"><img src="img/close.png" class="add" alt="close"></a>
+        <h1 class="add1">Kirjaudu sisään</h1>
+        <p class="add1">
+            Kirjaudu sisään Facebook -tunnuksillasi, jotta voit lisätä kohteen.
+        </p>
+
+        <a onclick="fb_login();" class="btn btn-block btn-social btn-facebook" style="line-height: 1.1;margin-left:10px;padding-top: 8px;">
+            <i class="fa fa-facebook" style="padding-right: 6px;"></i>
+            <span class="loginFacebook">Kirjaudu sisään</span>
+        </a>
+
+        <div id="status">
+        </div>
+    </div>
+    <div id="loading" class="login" style="display:none;opacity:0">
+        <h1 class="add1">Ladataan...</h1>
+        <div class="progress">
+            <div id="progress" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="formWrap" style="opacity:0;">
+
+        <form accept-charset="UTF-8" method="post" id="form" data-parsley-errors-container="#errors" class="form-horizontal">
+
+            <a href="#"><img src="img/close.png" class="add" alt="close"></a>
+            <div data-icon="ei-spinner" data-size="m"></div>
+            <h1 class="add1" id="h1">Lisää uusi kohde</h1>
+            <p class="add1" id="p">
+                Klikkaa tai raahaa piste kartalla haluamaasi kohaan, anna kohtelle nimi ja lyhyt kuvaus. Halutessasi voit lisätä kuvia.
+            </p>
+            <span class="loggedin">Kirjautuneena sisään: <span class="loggedinUser"></span> <span id="fbLogout" onclick="fbLogout()"><a href="#" class="loggedin">(Kirjaudu ulos)</a></span></span>
+
+            <div class="wrapAdd">
+                <div class="form-group">
+                    <label for="name" class="control-label col-xs-2">Pisteen otsikko:</label>
+                    <div class="col-xs-10">
+                        <input type="text" class="form-control" placeholder="Pisteen otsikko" id="name" name="position[name]" data-parsley-required-message="Tarkista nimi" data-parsley-length="[2, 27]" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="desc" class="control-label col-xs-2">Lyhyt kuvaus:</label>
+                    <div class="col-xs-10">
+                        <textarea id="desc" name="position[description]" placeholder="Kuvaus" class="form-control" data-parsley-required-message="Tarkista kuvaus" data-parsley-length="[15, 270]" required></textarea>
+                    </div>
+
+                </div>
+                <div class="form-group" style="  margin-bottom: 0;">
+                    <label for="file" class="control-label col-xs-2 form-file">Lisää kuvia:
+                        <br><span class="max3">Max 3kpl</span></label>
+                    <div class="col-xs-10">
+                        <div class="fileUpload btn btn-primary">
+                            <span id="info">Valitse tiedostot</span>
+                            <input type="file" class="upload" id="file" name="images[]" multiple="multiple" accept="image/png, image/tiff, image/jpeg" onchange="setFilename();">
+
+                        </div>
+                        <button id="resetFile" onclick="resetFileInput();" type="button" class="btn btn-warning">Poista</button>
+
+
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-offset-2 col-xs-10">
+                        <span class="fileNames" id="fileNames"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-offset-2 col-xs-10">
+                        <button type="submit" class="btn btn-success" id="submit">Lähetä</button>
+                        <div id="errors" class="errors"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <input type="hidden" name="position[lon]" id="position_lon">
+            <input type="hidden" name="position[lat]" id="position_lat">
+            <input type="hidden" id="email" name="position[email]" class="email">
+            <input type="hidden" name="position[fb_id]" class="user_id">
+        </form>
+
+    </div>
+</div>
+<script type="text/javascript">
+    String.prototype.trunc = String.prototype.trunc ||
+        function(n) {
+            return this.length > n ? this.substr(0, n - 1) + '&hellip;' : this;
+        };
+
+    var control = $("#file");
+
+    function resetFileInput() {
+        $('#fileNames').text('');
+        control.replaceWith(control = control.clone(true));
+        $('#resetFile').hide();
+    }
+
+    function containsAll(needles, haystack) {
+        for (var i = 0, len = needles.length; i < len; i++) {
+            if ($.inArray(needles[i], haystack) !== -1) return true;
+        }
+        return false;
+    }
+
+
+    function setFilename() {
+
+        var text = "";
+        var extension = "";
+        var tmp = 0;
+        var files = $('#file').prop("files");
+        var fileExtensions = [];
+        var names = $.map(files, function(val) {
+            fileExtensions[tmp] = val.name.split('.').pop();
+            tmp++;
+            return val.name;
+        });
+
+
+
+
+        if (files["length"] <= 3 && containsAll(["jpg", "jpeg", "png", "PNG", "tiff", "tif"], fileExtensions)) {
+                $('#fileError').remove();
+                $.each($.map($('#file').prop("files"), function(val) {
+                    return val.name;
+                }), function(index, value) {
+                    if (value.length > 25) {
+                        extension = value.split('.').pop();
+                    } else {
+                        extension = "";
+                    }
+                    if (value !== undefined) text += value.trunc(25) + extension + "<br>";
+                });
+                $("#fileNames").html(text);
+                $('#resetFile').show();
+            } else {
+                $('#fileNames').text('');
+                control.replaceWith(control = control.clone(true));
+                $('#resetFile').hide();
+                if ($("#fileError").is(":visible")) {
+                    $("#fileError").text('Korkeintaan 3 kuvaa. Sallittuja ovat jpg, png, tiff');
+                } else {
+                    $("#errors").append('<span id="fileError">Korkeintaan 3 kuvaa. Sallittuja ovat jpg, png, tiff</span>');
+                }
+            }
+
+        }
+
+
+        var instance = $('#form').parsley();
+        addPoints2 = function() {
+            $.when($.ajax({
+                url: 'http://128.199.45.65/positions.jsonp',
+                dataType: "jsonp",
+                jsonpCallback: 'jotain',
+                async: 'false'
+                    //success: jotain
+            })).then(function(data) {
+                $('body').trigger("click");
+                points = JSON.stringify(data);
+                points = points.substring(1);
+                points = points.substring(0, points.length - 1);
+                vectorSource.clear();
+                var jotain = new ol.format.GeoJSON().readFeatures(points);
+                vectorSource.addFeatures(jotain);
+
+                function round(value, decimals) {
+                    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+                }
+
+                var list = vectorSource.getFeatures();
+                var i = 0;
+                var voteArr = [];
+                var voteC;
+                for (i = 0; i < list.length; i++) {
+
+                    voteArr[i] = list[i]["q"]["votes"];
+
+                }
+
+                var max = Math.max.apply(null, voteArr);
+                i = 0;
+                for (i = 0; i < list.length; i++) {
+                    var ft = vectorSource.getClosestFeatureToCoordinate(list[i]["q"]["geometry"]["j"]);
+                    voteC = list[i]["q"]["votes"];
+                    var radius = round(voteC * (9 / max) + 7, 2);
+                    var opacity = round(voteC * (0.3 / max) + 0.5, 2);
+                    var iconStyle = new ol.style.Style({
+                        image: new ol.style.Circle({
+                            fill: new ol.style.Fill({
+                                color: 'rgba(216, 30, 115,' + opacity + ')'
+                            }),
+                            radius: radius
+                        })
+                    });
+                    ft.setStyle(iconStyle);
+                }
+                if (typeof list !== 'undefined') {
+                    $("#amount").text(list.length);
+                }
+            });
+            var iconNull = new ol.style.Style({
+                image: new ol.style.Circle({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255,0,0,0)'
+                    }),
+                    radius: 0
+                })
+            });
+            if (vectorSource.getFeatureById(800) !== null) {
+                vectorSource.getFeatureById(800).setStyle(iconNull);
+                vectorSource.removeFeature(vectorSource.getFeatureById(800));
+            }
+            vectorSource.clear();
+
+        }
+        $('form').submit(function() {
+            $('#loading').fadeTo(300, 1);
+            $('#form').hide();
+            var url = "http://128.199.45.65/positions.json"; // the script where you handle the form input.
+            var formData = new FormData($(this)[0]);
+            $.ajax({
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    //Upload progress
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            //Do something with upload progress
+                            $('#progress').width(percentComplete * 100 + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+
+                type: "POST",
+                url: url,
+                data: formData,
+                async: true,
+                success: function(data) {
+                    $('#confirm').load('pages/addPageSuccess.html', function(data) {
+                        $('#confirm').show();
+                        $('#confirm').css("opacity", "1");
+                        $("#desc").val('');
+                        $("#name").val('');
+                        $("#file").val('');
+                        $("#position_lon").val('');
+                        $("#position_lat").val('');
+                        $("#fileNames").text('');
+                        var reload = true;
+                        $('#desc').append(data);
+                        $('.descWrap').css("display", "none");
+                        $('#descFooter').css("display", "none");
+                        $('#imgWrap').hide();
+                        $('.social').hide();
+
+                        $('#loading').fadeTo(200, 0, function() {
+
+                            $('img.add').trigger("click");
+                            setTimeout(function() {
+                                $('body').trigger("click");
+                            }, 1000);
+                            $('#confirm').show();
+                        });
+
+                        addPoints2();
+                    });
+                },
+                error: function() {
+                    $('#loading').css("display", "none");
+                    $('#h1').css("color", "#de0000");
+                    $('#h1').text("Virhe!");
+                    if ($("#position_lon").val() == "" || $("#position_lat").val() == "") {
+                        $('#p').text('Annoithan pisteelle sijainnin?');
+                    } else {
+                        $('#p').text('Palvelin ei hyväksynyt pyyntöä, kokeile uudestaan myöhemmin.');
+                    }
+                    //$('#errorSubmit').css("display","inline"); 
+                    $('form').css("display", "inline");
+                    return false;
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+
+
+
+            });
+
+            return false; // avoid to execute the actual submit of the form.
+        });
+</script>

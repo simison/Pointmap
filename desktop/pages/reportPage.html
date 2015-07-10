@@ -1,0 +1,116 @@
+<a href="#"><img src="img/close.png" class="info" id="reportClose" alt="close"></a>
+<div id="loginReport" class="login">
+    <a href="#"><img src="img/close.png" class="add" id="close" alt="close"></a>
+    <h1 class="add1" style="margin-top:15px;padding-left:10px;">Kirjaudu sisään</h1>
+    <p class="add1" style="margin-bottom:10px">
+        Kirjaudu sisään Facebook -tunnuksillasi, jotta voit raportoida kohteesta.
+    </p>
+    <a onclick="fb_login();" class="btn btn-block btn-social btn-facebook" style="line-height: 1.5;padding-bottom: 4px;margin-left:10px;">
+        <i class="fa fa-facebook" style="padding-right:12px;"></i>
+        <span class="loginFacebook" style="font-size: 16px;padding-left: 9px;">Kirjauduu sisään</span>
+    </a>
+
+    <div id="status">
+    </div>
+</div>
+<div class="formWrap" style="display:none">
+    <form id="reportForm" data-parsley-errors-container="#errorsR">
+        <h1 class="report">Raportoi kohteesta <i class="reportName"></i></h1>
+        <p class="report">
+            Täytä alla olevat tiedot mahdollisimman tarkasti.
+        </p>
+        <span class="loggedin" style="padding-left:0">Kirjautuneena sisäään: <span class="loggedinUser"></span> <span id="fbLogout" onclick="fbLogout()"><a href="#" class="loggedin" style="font-size:inherit">(Kirjaudu ulos)</a></span></span>
+        
+        <fieldset>
+            <label for="reason" class="report">Syy: </label>
+            <select id="reason" name="report[cause]" data-parsley-required-message="Tarkista syy" required>
+                <option value="">---Valitse---</option>
+                <option value="fixed">Korjattu</option>
+                <option value="spam">Aiheeton</option>
+                <option value="other">Muu</option>
+            </select>
+            <br>
+
+
+            <label class="report" for="descR">Kuvaus:</label>
+            <textarea class="report" id="descR" name="report[description]" data-parsley-required-message="Tarkista kuvaus" required></textarea>
+            <br>
+            <input type="hidden" id="emailR" name="report[email]" class="email">
+            <input type="hidden" name="report[fb_id]" class="user_id">
+            <input type="hidden" id="idR" name="report[position_id]">
+            <input type="hidden" name="report[ignored]" value="false">
+
+            <div class="form-group">
+                <div class="col-xs-offset-2 col-xs-10" style="margin-left: 19%;width:70%;">
+                    <button type="submit" class="btn btn-success" id="submitR" style="float:left;margin-left: 4px;margin-top: 4%;">Lähetä</button>
+                    <div id="errorsR" class="errors"></div>
+                </div>
+            </div>
+
+
+
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    $('#submitR').click(function() {
+        $('#reportForm').parsley().reset();
+    });
+    $('#reportForm').parsley();
+
+
+
+    $('#reportForm').submit(function() {
+        $('#loading').fadeTo(300, 1);
+        //$('#loading').show();    
+        $('#reportForm').hide();
+        //console.log('submit');   
+        var url = "http://128.199.45.65/reports.json"; // the script where you handle the form input.
+        var formData = new FormData($(this)[0]);
+
+
+
+        $.ajax({
+
+            type: "POST",
+            url: url,
+            //contentType: false, 
+            data: formData,
+            async: true,
+            success: function(data) {
+                $('#reportClose').trigger("click");
+                $('#confirm').load('resc/reportPageSuccess.html', function(data) {
+
+                    //$('#desc').append(data);
+                    $('.descWrap').hide();
+                    $('#descFooter').hide();
+                    $('#imgWrap').hide();
+                    $('.social').hide();
+                    $("#descR").val('');
+                    $('#reason>option:eq(0)').prop('selected', true);
+                    $('#loading').css("display", "none");
+                    $('#confirm').show();
+                    $('#confirm').css("opacity", 1);
+
+                });
+            },
+            error: function() {
+                $('#loading').hide;
+                $('h1.report').css("color", "#de0000").text("Virhe!");
+                $('p.report').text('Tarkista antamasi tiedot.');
+                //$('#errorSubmit').css("display","inline"); 
+                $('form').css("display", "inline");
+                return false;
+            },
+
+            cache: false,
+            contentType: false,
+            processData: false
+
+
+
+        });
+
+        return false; // avoid to execute the actual submit of the form.
+    });
+</script>
