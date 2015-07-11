@@ -182,21 +182,20 @@ $.when($.ajax({
     var rasterLayer = new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: 'http://geoserver.hel.fi/mapproxy/wmts/osm-sm-hq/etrs_tm35fin_hq/{z}/{x}/{y}.png',
+            //url: 'http://api.tiles.mapbox.com/v4/vaahtokarkki.c5dcc914/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidmFhaHRva2Fya2tpIiwiYSI6IjhiNmQxZjNlZDY5NzVkNDBlOWZjYWJmNjE2YzlmNTVjIn0.ks2kzZ0hKBOZT1PQ-KVLGA',
             tilePixelRatio: 2,
             extent: extent,
             attributions: [attribution]
 
         }),
-        
+
     });
 
+    //var center = ol.proj.transform([24.9311, 60.1698], 'EPSG:4326', 'EPSG:3857');
     var center = [-2172193.974048958, -12743572.109373316];
-    var zoom = 10;
-    var maxZoom = 14;
-    var minZoom = 5;
     var view = new ol.View({
         center: center,
-        zoom: zoom,
+        zoom: 10,
         maxZoom: 14,
         minZoom: 5
     });

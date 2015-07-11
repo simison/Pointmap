@@ -6,19 +6,19 @@
     <title>Fillari.info - Pyöräteiden epäkohdat kartalla</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.css" type="text/css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/parsley.min.css" type="text/css">
     <link rel="stylesheet" href="css/bootstrap-social.css" type="text/css">
-     <link rel="stylesheet" href="css/baguetteBox.min.css">
+    <link rel="stylesheet" href="css/baguetteBox.min.css">
     <link rel="stylesheet" href="css/styles.min.css" type="text/css">
-    
+
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="http://andywer.github.io/jquery-dim-background/jquery.dim-background.min.js"></script>
-    
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js"></script>
-<!--    <link rel="stylesheet" href="resc/style_hover.css" type="text/css">-->
+    <!--    <link rel="stylesheet" href="resc/style_hover.css" type="text/css">-->
     <script src="js/vote.min.js"></script>
     <script src="js/parsley.min.js"></script>
     <script src='js/fi.min.js'></script>
@@ -33,12 +33,12 @@
 
         });
     </script>
-    
-    <meta property="og:title" content="Fillari.info - Pyöräteiden epäkohdat kartalla" >
-    <meta property="og:description" content="Pyöräteiden epäkohdat kartalla, tarkista helposti missä pahimmat ongelmat. Lisää oma fillari fail ja äänestä suosikkejasi!" >
-    <meta property="og:url" content="http://fillari.info" >
-    <meta property="og:image" content="http://fillari.info/img/og_image.png" >
-    
+
+    <meta property="og:title" content="Fillari.info - Pyöräteiden epäkohdat kartalla">
+    <meta property="og:description" content="Pyöräteiden epäkohdat kartalla, tarkista helposti missä pahimmat ongelmat. Lisää oma fillari fail ja äänestä suosikkejasi!">
+    <meta property="og:url" content="http://fillari.info">
+    <meta property="og:image" content="http://fillari.info/img/og_image.png">
+
 </head>
 
 <body>
@@ -76,11 +76,8 @@
                 <div class="info" id="infoBox"></div>
                 <div class="reportBox" id="reportBox"></div>
                 <div class="add" id="addPage"></div>
-                <div class="desc" id="desc">
-
-
-
-                </div>
+                <div class="desc" id="desc"></div>
+                <div class="twitter" id="twitter"></div>
                 <div id="map" class="map">
                     <div id="popup"></div>
 
@@ -104,7 +101,7 @@
 
 
             $('#desc').load("pages/descPage.html", function() {
-                
+
                 descLoaded = true;
                 setAmount();
                 $('[data-toggle="popover"]').popover();
@@ -242,6 +239,58 @@
                     }
                 });
 
+                var toggleStateTwitter = true;
+                $('#twitter').load("pages/twitterBox.html", function() {
+
+                    $("#twitter-button").hover(function() {
+                        $(this).fadeTo(200, 1);
+                    }, function() {
+                        $(this).fadeTo(200, 0.6);
+                    });
+
+                    $(".twitter-toggle").click(function() {
+
+                        if (toggleStateTwitter) {
+
+                            $(".twitter").animate({
+                                height: 400,
+                                width: 420
+                            }, {
+                                duration: 350,
+                                queue: false,
+                                complete: function() {
+                                    $('#open-twitter').fadeTo(300, 1);
+                                    $('#open-twitter').width("100%").height("100%");
+                                    $("img.twitter-toggle").css("display", "inline");
+                                }
+                            });
+                            $(".twitter").css("background-color", "#FCF7F5");
+                            $('#closed-twitter').css("display", "none");
+                        }
+
+                        $("img.twitter-toggle").click(function() {
+                            $('#open-twitter').fadeTo(200, 0);
+                            $(".twitter").animate({
+                                height: "3em",
+                                width: "12%"
+                            }, {
+                                duration: 350,
+                                queue: false,
+                                complete: function() {
+                                    $('#open-twitter').css("display", "none");
+                                    $(".twitter").css("background-color", "transparent");
+                                    $('#closed-twitter').fadeTo(100, 1); 
+                                }
+                            });
+                            toggleState = true;
+                            $("img.twitter-toggle").css("display", "none");
+
+                        });
+
+                    });
+
+                });
+
                 $("img.add").click(function() {
                     $('#open').fadeTo(200, 0);
                     $(".add").animate({
@@ -306,7 +355,7 @@
             });
         });
     </script>
-    <script src="js/map.min.js"></script>
+    <script src="js/map.js"></script>
 </body>
 
 </html>
